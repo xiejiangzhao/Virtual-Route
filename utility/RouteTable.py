@@ -82,7 +82,7 @@ class RouteTable:
                     row['interface'] = interface
                 return changed
         self.Table.append({"dst_ip": dst_ip, "dst_port": dst_port, "next_ip": next_ip, "next_port": next_port,
-                           "interface": interface})
+                           "interface": 1})
         return True
 
     def update_table_by_table(self, route_table: list) -> bool:
@@ -103,6 +103,16 @@ class RouteTable:
                 self.Table.remove(row)
                 return True
         return False
+
+    def get_neibour(self)->List:
+        """
+        :return:嵌套列表,里面每一个列表包含两个元素,ip和port
+        """
+        res=[]
+        for row in self.Table:
+            if row['interface']==0:
+                res.append([row['dst_ip'],row['dst_port']])
+        return res
 
     def save_table(self, json_file) -> None:
         with open(json_file, 'w') as file:

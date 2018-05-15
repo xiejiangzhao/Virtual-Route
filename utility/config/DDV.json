@@ -1,0 +1,23 @@
+[
+  {
+    "dst_ip": "127.0.0.1",
+    "dst_port": 9001,
+    "next_ip": "127.0.0.1",
+    "next_port": 9001,
+    "cost": 3
+  },
+  {
+    "dst_ip": "127.0.0.1",
+    "dst_port": 9004,
+    "next_ip": "127.0.0.1",
+    "next_port": 9004,
+    "cost": 6
+  },
+  {
+    "dst_ip": "127.0.0.1",
+    "dst_port": 9002,
+    "next_ip": "127.0.0.1",
+    "next_port": 9002,
+    "cost": 4
+  }
+]

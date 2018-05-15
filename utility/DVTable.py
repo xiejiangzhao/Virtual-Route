@@ -4,9 +4,13 @@ import json
 
 class DVTable:
     DVTable = []
+    own_ip=''
+    own_port=0
     Routetable: RouteTable = None
 
-    def __init__(self, json_file: str = '', routetable: RouteTable = ''):
+    def __init__(self, json_file: str = '', routetable: RouteTable = '',own_ip:str='',own_port:int=0):
+        self.own_ip=own_ip
+        self.own_port=own_port
         if json_file == '':
             self.DVTable = []
         else:
@@ -29,7 +33,7 @@ class DVTable:
             if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
                 return row['cost']
 
-    def update_table(self, table_ip: str, table_port: int, dst_ip: str, dst_port: int, next_ip: str, next_port: int,
+    def update_table(self, table_ip: str, table_port: int, dst_ip: str, dst_port: int,
                      cost: int) -> bool:
         """
         :param table_ip: the ip of the who boardcast the table
@@ -59,8 +63,7 @@ class DVTable:
     def update_table_by_table(self, table_ip: str, table_port: int, route_table: list) -> None:
         change = False
         for row in route_table:
-            res = self.update_table(table_ip, table_port, row['dst_ip'], row['dst_port'], row['next_ip'],
-                                    row['next_port'],
+            res = self.update_table(table_ip, table_port, row['dst_ip'], row['dst_port'],
                                     row['cost'])
             change = change or res
         return change

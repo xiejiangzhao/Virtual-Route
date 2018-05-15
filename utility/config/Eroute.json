@@ -1,0 +1,23 @@
+[
+  {
+    "dst_ip": "127.0.0.1",
+    "dst_port": 9002,
+    "next_ip": "127.0.0.1",
+    "next_port": 9002,
+    "interface": 0
+  },
+  {
+    "dst_ip": "127.0.0.1",
+    "dst_port": 9003,
+    "next_ip": "127.0.0.1",
+    "next_port": 9003,
+    "interface": 0
+  },
+  {
+    "dst_ip": "127.0.0.1",
+    "dst_port": 9005,
+    "next_ip": "127.0.0.1",
+    "next_port": 9005,
+    "interface": 0
+  }
+]
