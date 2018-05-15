@@ -62,6 +62,7 @@ class RouteTable:
                 return row['interface'] == 0
 
     def update_table(self, dst_ip: str, dst_port: int, next_ip: str, next_port: int, interface: int) -> None:
+
         """
         update table,if table don't have it,create;esle modify it
         :param dst_ip: destination ip
@@ -79,6 +80,26 @@ class RouteTable:
                 return
         self.Table.append({"dst_ip": dst_ip, "dst_port": dst_port, "next_ip": next_ip, "next_port": next_port,
                            "interface": interface})
+
+    def update_table_by_table(self,route_table:list):
+        for row in route_table:
+            self.update_table(row['dst_ip'],row['dst_port'],row['next_ip'],row['next_port'],row['interface'])
+        return
+    def delete_team(self, dst_ip: str, dst_port: int):
+        """
+        :param dst_ip:
+        :param dst_port:
+        :return: if delete success,return true;else false
+        """
+        for row in self.Table:
+            if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
+                self.Table.remove(row)
+                return True
+        return False
+
+    def save_table(self, json_file):
+        with open(json_file, 'w') as f:
+            json.dump(self.Table, f)
 
 
 if __name__ == '__main__':
