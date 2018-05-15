@@ -1,5 +1,6 @@
 from utility.RouteTable import RouteTable
 from utility.DVTable import DVTable
+from utility.LSGraph import LSGraph
 import json
 
 if __name__ == '__main__':
@@ -19,3 +20,8 @@ if __name__ == '__main__':
     ADV.update_table_by_table('127.0.0.1', 9001, BDV.DVTable)
     CDV.update_table_by_table('127.0.0.1', 9001, BDV.DVTable)
     DDV.update_table_by_table('127.0.0.1', 9001, BDV.DVTable)
+    AGraph=LSGraph('config/LSGraph.json','config/Mapping.json',Aroute)
+    AGraph.update_route_table('127.0.0.1',9000)
+    BGraph = LSGraph('config/LSGraph.json', 'config/Mapping.json', Broute)
+    BGraph.update_route_table('127.0.0.1', 9001)
+    print("")
