@@ -9,18 +9,19 @@ def generate_response(**kwargs) -> bytes:
     return b.encode("UTF-8")
 
 
-def send_message(data: bytes, ip: str, port: int) -> None:
+def send_message(data: bytes, ip: str, port: int) -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((ip, port))
         s.sendall(data)
         rc = str(s.recv(1024), 'UTF-8')
         print(rc)
+        return rc
 
 
 class RouteRequestHandler(socketserver.StreamRequestHandler):
     """
      * function need to implement:
-     * update_route(dict) -> None
+     * update_route(dict) -> bool
      * is_destination(str, int) -> bool
      * get_next_hop(str, int) -> Tuple[str, int]
      * get_route(str, int) -> dict
@@ -42,7 +43,7 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
                 self.wfile.write(generate_response(code=400))
                 continue
             if parsed_json["type"] == "update_route":
-                update_route(parsed_json["data"])
+                updated = update_route(parsed_json)
                 self.wfile.write(generate_response(code=200))
                 print(f"UPDATE_ROUTE from {parsed_json['src_ip']}:{parsed_json['src_port']}")
             elif parsed_json["type"] == "message":
