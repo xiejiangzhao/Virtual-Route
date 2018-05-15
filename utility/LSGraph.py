@@ -1,12 +1,13 @@
 import sys
 import json
+import copy
 from utility.RouteTable import RouteTable
 
 
 class LSGraph:
     Graph = []
     Routetable: RouteTable = None
-    Node_mapping: [list] = [{'ip': '127.0.0.1', 'port': 8001, 'interface': 8002}]
+    Node_mapping: [list] = None
 
     def __init__(self, json_file: str = '', Node_mapping_file='', routetable: RouteTable = ''):
         self.Routetable = routetable
@@ -31,15 +32,17 @@ class LSGraph:
                 return i
 
     def update_route_table(self, ip: str, port: int) -> None:
-        path = self.dijkstra(self.Graph, self.get_graph_index(ip, port))
+        path = self.dijkstra(copy.deepcopy(self.Graph), self.get_graph_index(ip, port))
         for i in range(len(path)):
             dst_ip = self.Node_mapping[i]['ip']
             dst_port = self.Node_mapping[i]['port']
-            interface = self.Node_mapping[i]['interface']
             if len(path[i]) == 0:
                 continue
+            elif len(path[i])==1:
+                interface=0
             else:
-                next_index = self.get_graph_index(ip, port)
+                interface=1
+            next_index = path[i][0]
             next_ip = self.Node_mapping[next_index]['ip']
             next_port = self.Node_mapping[next_index]['port']
             self.Routetable.update_table(dst_ip, dst_port, next_ip, next_port, interface)
@@ -77,7 +80,7 @@ class LSGraph:
             path[src][k].append(k)
             visited.append(k)
             nodes.remove(k)
-        return path[0]
+        return path[src]
 
 
 if __name__ == '__main__':
