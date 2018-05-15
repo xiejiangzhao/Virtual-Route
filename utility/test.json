@@ -1,1 +1,1 @@
-[{"dst_ip": "192.168.0.1", "dst_port": 8034, "next_ip": "127.0.0.1", "next_port": 4001, "interface": 1}]
+[{"dst_ip": "127.0.0.1", "dst_port": 8001, "next_ip": "127.0.0.1", "next_port": 8002, "interface": 0}]

@@ -81,11 +81,11 @@ class RouteTable:
         self.Table.append({"dst_ip": dst_ip, "dst_port": dst_port, "next_ip": next_ip, "next_port": next_port,
                            "interface": interface})
 
-    def update_table_by_table(self,route_table:list):
+    def update_table_by_table(self, route_table: list) -> None:
         for row in route_table:
-            self.update_table(row['dst_ip'],row['dst_port'],row['next_ip'],row['next_port'],row['interface'])
-        return
-    def delete_team(self, dst_ip: str, dst_port: int):
+            self.update_table(row['dst_ip'], row['dst_port'], row['next_ip'], row['next_port'], row['interface'])
+
+    def delete_team(self, dst_ip: str, dst_port: int) -> bool:
         """
         :param dst_ip:
         :param dst_port:
@@ -97,7 +97,7 @@ class RouteTable:
                 return True
         return False
 
-    def save_table(self, json_file):
+    def save_table(self, json_file) -> None:
         with open(json_file, 'w') as f:
             json.dump(self.Table, f)
 
