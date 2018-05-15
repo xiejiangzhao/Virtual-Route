@@ -25,7 +25,7 @@ class Route_Table:
             print(row['dst_ip'] + ' ' + str(row['dst_port']) + ' ' + row['next_ip'] + ' ' + str(
                 row['next_port']) + ' ' + str(row['interface']))
 
-    def find_next(self, dst_ip, dst_port):
+    def find_next(self, dst_ip: str, dst_port: int):
         """
         find the next jump
         :param dst_ip: destination ip
@@ -37,7 +37,7 @@ class Route_Table:
                 return [row['next_ip'], row['next_port']]
         return None
 
-    def is_onlink(self, dst_ip, dst_port):
+    def is_onlink(self, dst_ip: str, dst_port: int):
         """
         :param dst_ip: destination ip
         :param dst_port: destination port
@@ -47,7 +47,7 @@ class Route_Table:
             if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
                 return row['interface']
 
-    def update_table(self, dst_ip, dst_port, next_ip, next_port, interface):
+    def update_table(self, dst_ip: str, dst_port: int, next_ip: str, next_port: int, interface: int):
         """
         update table,if table don't have it,create;esle modify it
         :param dst_ip: destination ip
@@ -64,8 +64,28 @@ class Route_Table:
                 row['interface'] = interface
                 return
         self.Table.append({"dst_ip": dst_ip, "dst_port": dst_port, "next_ip": next_ip, "next_port": next_port,
-                            'interface': interface})
+                           'interface': interface})
         return
+
+    def update_table_by_table(self,route_table:list):
+        for row in route_table:
+            self.update_table(row['dst_ip'],row['dst_port'],row['next_ip'],row['next_port'],row['interface'])
+        return
+    def delete_team(self, dst_ip: str, dst_port: int):
+        """
+        :param dst_ip:
+        :param dst_port:
+        :return: if delete success,return true;else false
+        """
+        for row in self.Table:
+            if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
+                self.Table.remove(row)
+                return True
+        return False
+
+    def save_table(self, json_file):
+        with open(json_file, 'w') as f:
+            json.dump(self.Table, f)
 
 
 if __name__ == '__main__':
@@ -74,7 +94,11 @@ if __name__ == '__main__':
         json.dump(test, f)
     a = Route_Table('test.json')
     a.print_table()
-    b=a.is_onlink('127.0.0.1',8001)
-    c=a.find_next('127.0.0.1',8001)
-    d=a.update_table('192.168.0.1',8034,'127.0.0.1',4001,1)
+    b = a.is_onlink('127.0.0.1', 8001)
+    c = a.find_next('127.0.0.1', 8001)
+    d = a.update_table('192.168.0.1', 8034, '127.0.0.1', 4001, 1)
+    a.delete_team('127.0.0.1', 8001)
+    a.print_table()
+    a.save_table('test.json')
+    a.update_table_by_table(test)
     a.print_table()
