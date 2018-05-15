@@ -2,10 +2,15 @@ import socketserver
 import json
 
 
-def generateResponse(**kwargs) -> bytes:
+def generate_response(**kwargs) -> bytes:
     b = json.dumps(kwargs, ensure_ascii=False) + "\n"
-    return f"{len(b):08}{b}".encode("UTF-8")
+    return f"{len(b):08X}{b}".encode("UTF-8")
 
+
+class RouteServer(socketserver.ThreadingTCPServer):
+    def __init__(self, server_address, RequestHandlerClass, route_table):
+        super().__init__(server_address, RequestHandlerClass)
+        self.route_table = route_table
 
 
 class RouteRequestHandler(socketserver.StreamRequestHandler):
@@ -23,4 +28,10 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
                 print("Route Server Receive Data Error!")
                 print(f"raw_data={raw_data}")
                 print(f"parsed_json={parsed_json}")
-                self.wfile.write(generateResponse(code=400))
+                self.wfile.write(generate_response(code=400))
+                continue
+            if parsed_json["type"] == "update_route":
+                update_route(parsed_json["data"])
+                self.wfile.write(generate_response(code=200))
+            elif parsed_json["type"] == "message":
+                pass
