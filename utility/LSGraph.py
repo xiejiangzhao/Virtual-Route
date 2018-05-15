@@ -1,3 +1,4 @@
+import sys
 import json
 from utility.RouteTable import RouteTable
 
@@ -35,8 +36,8 @@ class LSGraph:
             dst_ip = self.Node_mapping[i]['ip']
             dst_port = self.Node_mapping[i]['port']
             interface = self.Node_mapping[i]['interface']
-            if len(path[i]) != 0:
-                next_index = path[i][0]
+            if len(path[i]) == 0:
+                continue
             else:
                 next_index = self.get_graph_index(ip, port)
             next_ip = self.Node_mapping[next_index]['ip']
@@ -48,18 +49,18 @@ class LSGraph:
         # 判断图是否为空，如果为空直接退出
         if graph is None:
             return None
-        nodes = [i for i in range(len(graph))]  # 获取图中所有节点
-        visited = []  # 表示已经路由到最短路径的节点集合
+        nodes = [i for i in range(len(graph))]
+        visited = []
         if src in nodes:
             visited.append(src)
             nodes.remove(src)
         else:
             return None
-        distance = {src: 0}  # 记录源节点到各个节点的距离
+        distance = {src: 0}
         for i in nodes:
-            distance[i] = graph[src][i]  # 初始化
+            distance[i] = graph[src][i]
         # print(distance)
-        path = {src: {src: []}}  # 记录源节点到每个节点的路径
+        path = {src: {src: []}}
         k = pre = src
         while nodes:
             mid_distance = float('inf')
@@ -68,24 +69,28 @@ class LSGraph:
                     new_distance = graph[src][v] + graph[v][d]
                     if new_distance < mid_distance:
                         mid_distance = new_distance
-                        graph[src][d] = new_distance  # 进行距离更新
+                        graph[src][d] = new_distance
                         k = d
                         pre = v
-            distance[k] = mid_distance  # 最短路径
+            distance[k] = mid_distance
             path[src][k] = [i for i in path[src][pre]]
             path[src][k].append(k)
-            # 更新两个节点集合
             visited.append(k)
             nodes.remove(k)
         return path[0]
 
 
 if __name__ == '__main__':
-    Node_mapping: list = [{'ip': '127.0.0.1', 'port': 8001, 'interface': 8002}]
+    rou = RouteTable()
+    ls = LSGraph('Lstest.json', 'node_map.json')
+    Node_mapping: list = [{'ip': '127.0.0.1', 'port': 8001, 'interface': 0},
+                          {'ip': '127.0.0.1', 'port': 8002, 'interface': 0},
+                          {'ip': '127.0.0.1', 'port': 8003, 'interface': 0},
+                          {'ip': '127.0.0.1', 'port': 8004, 'interface': 0}]
     with open('node_map.json', 'w') as f:
         json.dump(Node_mapping, f)
-    graph_list = [[0, 2, 7], [2, 0, 1], [7, 1, 0]]
+    graph_list = [[0, 3, 2, sys.maxsize], [3, 0, sys.maxsize, 3], [2, sys.maxsize, 0, 5], [sys.maxsize, 3, 5, 0]]
     with open('LStest.json', 'w') as f:
         json.dump(graph_list, f)
-    a = LSGraph('LStest.json', 'node_map.json')
+    a = LSGraph('LStest.json', 'node_map.json', rou)
     a.update_route_table('127.0.0.1', 8001)

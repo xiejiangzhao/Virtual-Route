@@ -12,7 +12,7 @@ class DVTable:
         else:
             with open(json_file, 'r') as f:
                 self.DVTable = json.load(f)
-            self.Routetable = routetable
+        self.Routetable = routetable
 
     def print_table(self) -> None:
         """
