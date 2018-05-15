@@ -25,6 +25,7 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
      * is_destination(str, int) -> bool
      * get_next_hop(str, int) -> Tuple[str, int]
      * get_route(str, int) -> dict
+     * send_route() -> None
     """
     def handle(self):
         while True:
@@ -45,6 +46,8 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
             if parsed_json["type"] == "update_route":
                 updated = update_route(parsed_json)
                 self.wfile.write(generate_response(code=200))
+                if updated:
+                    send_route()
                 print(f"UPDATE_ROUTE from {parsed_json['src_ip']}:{parsed_json['src_port']}")
             elif parsed_json["type"] == "message":
                 if is_destination(parsed_json["dst_ip"], parsed_json["dst_port"]):
