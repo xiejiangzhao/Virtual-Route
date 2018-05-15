@@ -26,8 +26,8 @@ class RouteTable:
         if json_file == '':
             self.Table = []
         else:
-            with open(json_file, 'r') as f:
-                self.Table = json.load(f)
+            with open(json_file, 'r') as file:
+                self.Table = json.load(file)
 
     def print_table(self) -> None:
         """
@@ -61,7 +61,7 @@ class RouteTable:
             if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
                 return row['interface'] == 0
 
-    def update_table(self, dst_ip: str, dst_port: int, next_ip: str, next_port: int, interface: int) -> None:
+    def update_table(self, dst_ip: str, dst_port: int, next_ip: str, next_port: int, interface: int = '') -> bool:
 
         """
         update table,if table don't have it,create;esle modify it
@@ -70,20 +70,27 @@ class RouteTable:
         :param next_ip: next ip
         :param next_port: next port
         :param interface: interface info
-        :return: without return
+        :return: return if changed
         """
+        changed = False
         for row in self.Table:
             if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
+                changed = row['next_ip'] != next_ip or row['next_port'] != next_port
                 row['next_ip'] = next_ip
                 row['next_port'] = next_port
-                row['interface'] = interface
-                return
+                if interface != '':
+                    row['interface'] = interface
+                return changed
         self.Table.append({"dst_ip": dst_ip, "dst_port": dst_port, "next_ip": next_ip, "next_port": next_port,
                            "interface": interface})
+        return True
 
-    def update_table_by_table(self, route_table: list) -> None:
+    def update_table_by_table(self, route_table: list) -> bool:
+        changed = False
         for row in route_table:
-            self.update_table(row['dst_ip'], row['dst_port'], row['next_ip'], row['next_port'], row['interface'])
+            res = self.update_table(row['dst_ip'], row['dst_port'], row['next_ip'], row['next_port'], row['interface'])
+            changed = changed or res
+        return changed
 
     def delete_team(self, dst_ip: str, dst_port: int) -> bool:
         """
@@ -98,8 +105,8 @@ class RouteTable:
         return False
 
     def save_table(self, json_file) -> None:
-        with open(json_file, 'w') as f:
-            json.dump(self.Table, f)
+        with open(json_file, 'w') as file:
+            json.dump(self.Table, file)
 
 
 if __name__ == '__main__':
