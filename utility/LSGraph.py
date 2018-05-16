@@ -8,8 +8,12 @@ class LSGraph:
     Graph = []
     Routetable: RouteTable = None
     Node_mapping: [list] = None
+    ip = ""
+    port = 0
 
-    def __init__(self, json_file: str = '', Node_mapping_file='', routetable: RouteTable = ''):
+    def __init__(self, json_file: str = '', Node_mapping_file='', routetable: RouteTable = '', ip: str = "", port: int = 0):
+        self.ip = ip
+        self.port = port
         self.Routetable = routetable
         if json_file == '':
             self.Graph = []

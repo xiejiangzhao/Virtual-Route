@@ -24,7 +24,7 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
      * update_route(dict) -> bool
      * is_destination(str, int) -> bool
      * get_next_hop(str, int) -> Tuple[str, int]
-     * get_route(str, int) -> dict
+     * get_next_hop_from_controller(dict) -> dict
      * send_route() -> None
     """
     def handle(self):
@@ -56,8 +56,8 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
                     ip, port = get_next_hop(parsed_json["dst_ip"], parsed_json["dst_port"])
                     send_message(json.dumps(parsed_json, ensure_ascii=False).encode("UTF-8"), ip, port)
                     print("NEXT_HOP:", ip, port)
-            elif parsed_json["type"] == "get_route_from_controller":
+            elif parsed_json["type"] == "get_next_hop":
                 ip, port = parsed_json["data"]
-                rd = get_route(ip, port)
+                rd = get_next_hop_from_controller(parsed_json)
                 send_message(json.dumps(rd, ensure_ascii=False).encode("UTF-8"), ip, port)
                 print(f"SEND_ROUTE to {ip}:{port}.")
