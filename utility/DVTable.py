@@ -60,9 +60,9 @@ class DVTable:
                 return True
         return False
 
-    def update_table_by_table(self, table_ip: str, table_port: int, route_table: list) -> None:
+    def update_table_by_table(self, table_ip: str, table_port: int, dv_table: list) -> None:
         change = False
-        for row in route_table:
+        for row in dv_table:
             res = self.update_table(table_ip, table_port, row['dst_ip'], row['dst_port'],
                                     row['cost'])
             change = change or res
