@@ -91,14 +91,3 @@ class DVTable:
 
 if __name__ == '__main__':
     a = RouteTable('test.json')
-    b = DVTable('DVtest.json', a)
-    test = [{"dst_ip": "127.0.0.1", "dst_port": 8003, "next_ip": "127.0.0.1", "next_port": 8003, 'cost': 1},
-            {"dst_ip": "127.0.0.1", "dst_port": 8001, "next_ip": "127.0.0.1", "next_port": 8001, 'cost': 2}]
-    b.update_table_by_table('127.0.0.1', 8002, test)
-    """
-    test = [{"dst_ip": "127.0.0.1", "dst_port": 8002, "next_ip": "127.0.0.1", "next_port": 8002, 'cost': 0}]
-    with open('DVtest.json', 'w') as f:
-        json.dump(test, f)
-    """
-
-    a.print_table()
