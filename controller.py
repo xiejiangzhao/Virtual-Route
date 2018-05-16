@@ -15,12 +15,15 @@ def generate_response(**kwargs) -> bytes:
 
 
 def send_message(data: bytes, ip: str, port: int) -> str:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((ip, port))
-        s.sendall(data)
-        rc = str(s.recv(1024), 'UTF-8')
-        print(rc)
-        return rc
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((ip, port))
+    if data[-1] != b'\n':
+        data += b'\n'
+    s.sendall(data)
+    rc = str(s.recv(1024), 'UTF-8')
+    # s.shutdown(socket.SHUT_RDWR)
+    s.close()
+    return rc
 
 
 class RouteRequestHandler(socketserver.StreamRequestHandler):
@@ -35,8 +38,10 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
     def handle(self):
         while True:
             try:
+                parsed_json = {}
+                raw_data = ""
                 raw_data = self.rfile.readline().decode("UTF-8")
-                if raw_data == "":
+                if raw_data == "" or raw_data == "\n":
                     continue
                 parsed_json = json.loads(raw_data)
             except KeyboardInterrupt:
@@ -58,10 +63,12 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
             elif parsed_json["type"] == "message":
                 if is_destination(parsed_json["dst_ip"], parsed_json["dst_port"]):
                     print("RECV:", parsed_json["data"])
+                    self.wfile.write(generate_response(code=200))
                 else:
                     ip, port = get_next_hop(parsed_json["dst_ip"], parsed_json["dst_port"])
                     send_message(json.dumps(parsed_json, ensure_ascii=False).encode("UTF-8"), ip, port)
                     print("NEXT_HOP:", ip, port)
+                    self.wfile.write(generate_response(code=200))
             elif parsed_json["type"] == "get_next_hop":
                 print("Get_next_hop:")
                 print(parsed_json)
@@ -117,6 +124,6 @@ if __name__ == "__main__":
         lst.update_route_table(ROUTER_IP, ROUTER_PORTS[i])
         rts.append(rt)
         lsts.append(lst)
-    s = socketserver.ThreadingTCPServer((CONTROLLER_IP, CONTROLLER_PORT), RouteRequestHandler)
+    ss = socketserver.ThreadingTCPServer((CONTROLLER_IP, CONTROLLER_PORT), RouteRequestHandler)
     print("PREPARE to start controller...")
-    s.serve_forever()
+    ss.serve_forever()
