@@ -36,6 +36,11 @@ class LSGraph:
                 return i
 
     def update_route_table(self, ip: str, port: int) -> None:
+        """
+        :param ip: 起始节点ip
+        :param port: 起始端口port
+        :return: 不返回内容
+        """
         path = self.dijkstra(copy.deepcopy(self.Graph), self.get_graph_index(ip, port))
         for i in range(len(path)):
             dst_ip = self.Node_mapping[i]['ip']
@@ -53,7 +58,11 @@ class LSGraph:
         pass
 
     def dijkstra(self, graph, src):
-        # 判断图是否为空，如果为空直接退出
+        """
+        :param graph:一个二维列表,代表邻接矩阵
+        :param src:一个数字代表起始点序号
+        :return:返回一个列表里面包含了从起始点通往各点的路径字典
+        """
         if graph is None:
             return None
         nodes = [i for i in range(len(graph))]
