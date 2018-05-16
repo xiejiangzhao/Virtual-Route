@@ -14,7 +14,7 @@ def send_message(data: bytes, ip: str, port: int) -> str:
         s.connect((ip, port))
         s.sendall(data)
         rc = str(s.recv(1024), 'UTF-8')
-        print(rc)
+        # print(rc)
         return rc
 
 
@@ -43,6 +43,7 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
                 print(f"parsed_json={parsed_json}")
                 self.wfile.write(generate_response(code=400))
                 continue
+            print("Parsed to JSON success!")
             if parsed_json["type"] == "update_route":
                 updated = update_route(parsed_json)
                 self.wfile.write(generate_response(code=200))
