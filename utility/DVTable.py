@@ -33,7 +33,7 @@ class DVTable:
             if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
                 return row['cost']
 
-    def update_table(self, table_ip: str, table_port: int, dst_ip: str, dst_port: int,
+    def update_table(self, src_ip: str, src_port: int, dst_ip: str, dst_port: int,
                      cost: int) -> bool:
         """
         :param table_ip: the ip of the who boardcast the table
@@ -45,25 +45,29 @@ class DVTable:
         :param cost:
         :return: if table is change,return true
         """
-        cost_to_table = self.get_cost(table_ip, table_port)
+        cost_to_table = self.get_cost(src_ip, src_port)
         for row in self.DVTable:
             if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
                 if row['cost'] > cost + cost_to_table:
-                    row['next_ip'] = table_ip
-                    row['next_port'] = table_port
+                    row['next_ip'] = src_ip
+                    row['next_port'] = src_port
                     row['cost'] = cost + cost_to_table
+                    return True
                 else:
-                    self.DVTable.append(
-                        {"dst_ip": dst_ip, "dst_port": dst_port, "next_ip": table_ip, "next_port": table_port,
-                         'cost': cost + cost_to_table})
-                self.Routetable.update_table(dst_ip, dst_port, table_ip, table_port)
-                return True
-        return False
+                    return False
+        if dst_ip!=self.own_ip or dst_port!=self.own_port:
+            self.DVTable.append(
+                {"dst_ip": dst_ip, "dst_port": dst_port, "next_ip": src_ip, "next_port": src_port,
+                 'cost': cost + cost_to_table})
+            self.Routetable.update_table(dst_ip, dst_port, src_ip, src_port)
+            return True
+        else:
+            return  False
 
-    def update_table_by_table(self, table_ip: str, table_port: int, dv_table: list) -> None:
+    def update_table_by_table(self, src_ip: str, src_port: int, route_table: list) -> None:
         change = False
-        for row in dv_table:
-            res = self.update_table(table_ip, table_port, row['dst_ip'], row['dst_port'],
+        for row in route_table:
+            res = self.update_table(src_ip, src_port, row['dst_ip'], row['dst_port'],
                                     row['cost'])
             change = change or res
         return change
