@@ -4,20 +4,20 @@
     "dst_port": 9001,
     "next_ip": "127.0.0.1",
     "next_port": 9001,
-    "interface": 2
+    "cost": 2
   },
   {
     "dst_ip": "127.0.0.1",
     "dst_port": 9004,
     "next_ip": "127.0.0.1",
     "next_port": 9004,
-    "interface": 0
+    "cost": 5
   },
   {
     "dst_ip": "127.0.0.1",
     "dst_port": 9003,
     "next_ip": "127.0.0.1",
     "next_port": 9003,
-    "interface": 0
+    "cost": 4
   }
 ]
