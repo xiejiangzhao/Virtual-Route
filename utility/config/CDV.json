@@ -11,13 +11,13 @@
     "dst_port": 9004,
     "next_ip": "127.0.0.1",
     "next_port": 9004,
-    "cost": 0
+    "cost": 5
   },
   {
     "dst_ip": "127.0.0.1",
     "dst_port": 9003,
     "next_ip": "127.0.0.1",
     "next_port": 9003,
-    "cost": 0
+    "cost": 4
   }
 ]
