@@ -14,6 +14,7 @@ class DVTable:
     DVTable = []
     own_ip = ''
     own_port = 0
+    changed = False
     Routetable: RouteTable = None
 
     def __init__(self, json_file: str = '', routetable: RouteTable = '', own_ip: str = '', own_port: int = 0):
@@ -89,12 +90,13 @@ class DVTable:
                 'dst_port'] == src_port:
                 self.delete_team(row['dst_ip'], row['dst_port'])
                 self.Routetable.delete_team(row['dst_ip'], row['dst_port'])
+        self.changed = True
 
     def update_table_by_table(self, src_ip: str, src_port: int, dv_table: list) -> None:
         change = False
         for row in self.DVTable[:]:
             if row['next_ip'] == src_ip and row['next_port'] == src_port and not self.Routetable.is_on_link(
-                    row['dst_ip'], row['dst_port']) and not is_exist(row['dst_ip'], row['dst_port'], route_table):
+                    row['dst_ip'], row['dst_port']) and not is_exist(row['dst_ip'], row['dst_port'], dv_table):
                 self.delete_team(row['dst_ip'], row['dst_port'])
                 self.Routetable.delete_team(row['dst_ip'], row['dst_port'])
                 change = True
@@ -102,6 +104,7 @@ class DVTable:
             res = self.update_table(src_ip, src_port, row['dst_ip'], row['dst_port'],
                                     row['cost'])
             change = change or res
+        self.changed = change
         return change
 
     def delete_team(self, dst_ip: str, dst_port: int) -> bool:
@@ -119,6 +122,9 @@ class DVTable:
     def save_table(self, json_file) -> None:
         with open(json_file, 'w') as f:
             json.dump(self.DVTable, f)
+
+    def reset_change(self) -> None:
+        self.changed = False
 
 
 if __name__ == '__main__':
