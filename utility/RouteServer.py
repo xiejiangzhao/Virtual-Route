@@ -12,9 +12,12 @@ def generate_response(**kwargs) -> bytes:
 def send_message(data: bytes, ip: str, port: int) -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((ip, port))
+        if data[-1] != b'\n':
+            data += b'\n'
         s.sendall(data)
         rc = str(s.recv(1024), 'UTF-8')
-        # print(rc)
+        # s.shutdown(socket.SHUT_RDWR)
+        # s.close()
         return rc
 
 
@@ -30,8 +33,10 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
     def handle(self):
         while True:
             try:
+                parsed_json = {}
+                raw_data = ""
                 raw_data = self.rfile.readline().decode("UTF-8")
-                if raw_data == "":
+                if raw_data == "" or raw_data == "\n":
                     continue
                 parsed_json = json.loads(raw_data)
             except KeyboardInterrupt:
@@ -62,3 +67,4 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
                 rd = get_next_hop_from_controller(parsed_json)
                 send_message(json.dumps(rd, ensure_ascii=False).encode("UTF-8"), ip, port)
                 print(f"SEND_ROUTE to {ip}:{port}.")
+            break

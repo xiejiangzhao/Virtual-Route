@@ -17,8 +17,10 @@ class ClientRequestHandler(socketserver.StreamRequestHandler):
     def handle(self):
         while True:
             try:
+                parsed_json = {}
+                raw_data = ""
                 raw_data = self.rfile.readline().decode("UTF-8")
-                if raw_data == "":
+                if raw_data == "" or raw_data == "\n":
                     continue
                 parsed_json = json.loads(raw_data)
             except KeyboardInterrupt:
@@ -27,11 +29,13 @@ class ClientRequestHandler(socketserver.StreamRequestHandler):
             except Exception:
                 print("Route Server Receive Data Error!")
                 print(f"raw_data={raw_data}")
+                print(f"raw_data_hex={raw_data.encode('UTF-8')}")
                 print(f"parsed_json={parsed_json}")
                 self.wfile.write(generate_response(code=400))
                 continue
             print("Parsed to JSON success!")
             if parsed_json["type"] == "message":
+                self.wfile.write(generate_response(code=200))
                 if parsed_json["dst_ip"] == self_ip and parsed_json["dst_port"] == self_port:
                     print(f"RECV: {parsed_json['data']}\nfrom {parsed_json['src_ip']}:{parsed_json['src_port']}")
                     self.wfile.write(generate_response(code=200))
@@ -53,12 +57,13 @@ class ClientRequestHandler(socketserver.StreamRequestHandler):
                         self.wfile.write(generate_response(code=400))
             else:
                 print(f"ERROR: {parsed_json}")
+            break
 
 
 def start_server(ip: str, port: int, handler) -> None:
-    s = socketserver.ThreadingTCPServer((ip, port), handler)
+    ss = socketserver.ThreadingTCPServer((ip, port), handler)
     print("PREPARE to start controller...")
-    s.serve_forever()
+    ss.serve_forever()
 
 
 if __name__ == "__main__":
@@ -85,6 +90,6 @@ if __name__ == "__main__":
             print(f"TRANS: {rc}")
         else:
             print(f"ERROR: {pj}")
-    s = socketserver.ThreadingTCPServer((ROUTER_IP, ROUTER_PORTS[cid]), ClientRequestHandler)
+    ss = socketserver.ThreadingTCPServer((ROUTER_IP, ROUTER_PORTS[cid]), ClientRequestHandler)
     print("PREPARE to start controller...")
-    s.serve_forever()
+    ss.serve_forever()
