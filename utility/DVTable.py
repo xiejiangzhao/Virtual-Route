@@ -3,6 +3,13 @@ import json
 import sys
 
 
+def is_exist(dst_ip: str, dst_port: int, DVTable: list) -> bool:
+    for row in DVTable:
+        if row['dst_ip'] == dst_ip and row['dst_port'] == dst_port:
+            return True
+    return False
+
+
 class DVTable:
     DVTable = []
     own_ip = ''
@@ -55,6 +62,10 @@ class DVTable:
                     row['cost'] = cost + cost_to_table
                     self.Routetable.update_table(dst_ip, dst_port, src_ip, src_port)
                     return True
+                elif row['next_ip'] == src_ip and row['next_port'] == src_port and row['cost'] != cost + cost_to_table:
+                    row['cost'] = cost + cost_to_table
+                    self.Routetable.update_table(dst_ip, dst_port, src_ip, src_port)
+                    return True
                 else:
                     return False
         if dst_ip != self.own_ip or dst_port != self.own_port:
@@ -67,13 +78,27 @@ class DVTable:
             return False
 
     def route_offline(self, src_ip: str, src_port: int) -> None:
-        for row in self.DVTable:
-            if row['next_ip'] == src_ip and row['next_port'] == src_port:
-                row['cost'] = float(sys.maxsize)
+        """
+        如果周期性查询路由查不到,向我发送该路由的ip和端口,然后需要将我的路由信息告诉邻居.
+        :param src_ip:
+        :param src_port:
+        :return:
+        """
+        for row in self.DVTable[:]:
+            if row['next_ip'] == src_ip and row['next_port'] == src_port or row['dst_ip'] == src_ip and row[
+                'dst_port'] == src_port:
+                self.delete_team(row['dst_ip'], row['dst_port'])
+                self.Routetable.delete_team(row['dst_ip'], row['dst_port'])
 
-    def update_table_by_table(self, src_ip: str, src_port: int, route_table: list) -> None:
+    def update_table_by_table(self, src_ip: str, src_port: int, dv_table: list) -> None:
         change = False
-        for row in route_table:
+        for row in self.DVTable[:]:
+            if row['next_ip'] == src_ip and row['next_port'] == src_port and not self.Routetable.is_on_link(
+                    row['dst_ip'], row['dst_port']) and not is_exist(row['dst_ip'], row['dst_port'], route_table):
+                self.delete_team(row['dst_ip'], row['dst_port'])
+                self.Routetable.delete_team(row['dst_ip'], row['dst_port'])
+                change = True
+        for row in dv_table:
             res = self.update_table(src_ip, src_port, row['dst_ip'], row['dst_port'],
                                     row['cost'])
             change = change or res
