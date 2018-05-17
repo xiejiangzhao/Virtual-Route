@@ -16,6 +16,16 @@ if __name__ == '__main__':
     DDV = DVTable('config/DDV.json', Droute,'127.0.0.1',9003)
     EDV = DVTable('config/EDV.json', Eroute,'127.0.0.1',9004)
     FDV = DVTable('config/FDV.json', Froute,'127.0.0.1',9005)
+    myqueue=[BDV,ADV]
+    maps={'9000':ADV,'9001':BDV,'9002':CDV,'9003':DDV,'9004':EDV,'9005':FDV}
+    while len(myqueue)!=0:
+        a=myqueue.pop()
+        for i in a.Routetable.get_neibour():
+            res=maps[str(i[1])].update_table_by_table(a.own_ip,a.own_port,a.DVTable)
+            if res:
+                myqueue.insert(0,maps[str(i[1])])
+
+
     BDV.update_table_by_table('127.0.0.1', 9000, ADV.DVTable)
     ADV.update_table_by_table('127.0.0.1', 9001, BDV.DVTable)
     CDV.update_table_by_table('127.0.0.1', 9001, BDV.DVTable)

@@ -1,16 +1,17 @@
 from utility.RouteTable import RouteTable
 import json
+import sys
 
 
 class DVTable:
     DVTable = []
-    own_ip=''
-    own_port=0
+    own_ip = ''
+    own_port = 0
     Routetable: RouteTable = None
 
-    def __init__(self, json_file: str = '', routetable: RouteTable = '',own_ip:str='',own_port:int=0):
-        self.own_ip=own_ip
-        self.own_port=own_port
+    def __init__(self, json_file: str = '', routetable: RouteTable = '', own_ip: str = '', own_port: int = 0):
+        self.own_ip = own_ip
+        self.own_port = own_port
         if json_file == '':
             self.DVTable = []
         else:
@@ -52,17 +53,23 @@ class DVTable:
                     row['next_ip'] = src_ip
                     row['next_port'] = src_port
                     row['cost'] = cost + cost_to_table
+                    self.Routetable.update_table(dst_ip, dst_port, src_ip, src_port)
                     return True
                 else:
                     return False
-        if dst_ip!=self.own_ip or dst_port!=self.own_port:
+        if dst_ip != self.own_ip or dst_port != self.own_port:
             self.DVTable.append(
                 {"dst_ip": dst_ip, "dst_port": dst_port, "next_ip": src_ip, "next_port": src_port,
                  'cost': cost + cost_to_table})
             self.Routetable.update_table(dst_ip, dst_port, src_ip, src_port)
             return True
         else:
-            return  False
+            return False
+
+    def route_offline(self, src_ip: str, src_port: int) -> None:
+        for row in self.DVTable:
+            if row['next_ip'] == src_ip and row['next_port'] == src_port:
+                row['cost'] = float(sys.maxsize)
 
     def update_table_by_table(self, src_ip: str, src_port: int, route_table: list) -> None:
         change = False
