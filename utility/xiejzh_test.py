@@ -24,6 +24,7 @@ if __name__ == '__main__':
             res = maps[str(i[1])].update_table_by_table(a.own_ip, a.own_port, a.DVTable)
             if res:
                 myqueue.insert(0, maps[str(i[1])])
+        a.reset_change()
     myqueue = [EDV, DDV, BDV]
     BDV.route_offline(CDV.own_ip, CDV.own_port)
     DDV.route_offline(CDV.own_ip, CDV.own_port)
@@ -34,6 +35,7 @@ if __name__ == '__main__':
             res = maps[str(i[1])].update_table_by_table(a.own_ip, a.own_port, a.DVTable)
             if res:
                 myqueue.insert(0, maps[str(i[1])])
+        a.reset_change()
     BDV.update_table_by_table('127.0.0.1', 9000, ADV.DVTable)
     ADV.update_table_by_table('127.0.0.1', 9001, BDV.DVTable)
     CDV.update_table_by_table('127.0.0.1', 9001, BDV.DVTable)
