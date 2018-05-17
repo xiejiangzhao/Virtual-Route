@@ -10,10 +10,10 @@ tmux split-window -h -p 50 -t "test-controller":0.0
 tmux split-window -v -p 50 -t "test-controller":0.0
 tmux split-window -v -p 50 -t "test-controller":0.1
 
-tmux send -t "test-controller":0.3 "$PYTHON $SRC/controller_client.py" Enter
+tmux send -t "test-controller":0.0 "$PYTHON $SRC/controller.py" Enter
 tmux send -t "test-controller":0.1 "$PYTHON $SRC/controller_client.py" Enter
 tmux send -t "test-controller":0.2 "$PYTHON $SRC/controller_client.py" Enter
-tmux send -t "test-controller":0.0 "$PYTHON $SRC/controller.py" Enter
+tmux send -t "test-controller":0.3 "$PYTHON $SRC/controller_client.py" Enter
 
 tmux send -t "test-controller":0.1 '1' Enter
 tmux send -t "test-controller":0.1 'n' Enter
