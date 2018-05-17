@@ -42,6 +42,8 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
                 raw_data = ""
                 raw_data = self.rfile.readline().decode("UTF-8")
                 if raw_data == "" or raw_data == "\n":
+                    self.request.close()
+                    exit(0)
                     continue
                 parsed_json = json.loads(raw_data)
             except KeyboardInterrupt:
@@ -77,6 +79,7 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
                 self.wfile.write(json.dumps(rd, ensure_ascii=False).encode("UTF-8"))
                 # send_message(json.dumps(rd, ensure_ascii=False).encode("UTF-8"), ip, port)
                 print(f"SEND_ROUTE to {ip}:{port}.")
+            break
 
 
 CONTROLLER_IP = "127.0.0.1"

@@ -67,3 +67,4 @@ class RouteRequestHandler(socketserver.StreamRequestHandler):
                 rd = get_next_hop_from_controller(parsed_json)
                 send_message(json.dumps(rd, ensure_ascii=False).encode("UTF-8"), ip, port)
                 print(f"SEND_ROUTE to {ip}:{port}.")
+            break

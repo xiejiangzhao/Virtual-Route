@@ -57,6 +57,7 @@ class ClientRequestHandler(socketserver.StreamRequestHandler):
                         self.wfile.write(generate_response(code=400))
             else:
                 print(f"ERROR: {parsed_json}")
+            break
 
 
 def start_server(ip: str, port: int, handler) -> None:
