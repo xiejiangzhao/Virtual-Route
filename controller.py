@@ -15,15 +15,15 @@ def generate_response(**kwargs) -> bytes:
 
 
 def send_message(data: bytes, ip: str, port: int) -> str:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((ip, port))
-    if data[-1] != b'\n':
-        data += b'\n'
-    s.sendall(data)
-    rc = str(s.recv(1024), 'UTF-8')
-    # s.shutdown(socket.SHUT_RDWR)
-    s.close()
-    return rc
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((ip, port))
+        if data[-1] != b'\n':
+            data += b'\n'
+        s.sendall(data)
+        rc = str(s.recv(1024), 'UTF-8')
+        # s.shutdown(socket.SHUT_RDWR)
+        # s.close()
+        return rc
 
 
 class RouteRequestHandler(socketserver.StreamRequestHandler):
