@@ -104,14 +104,20 @@ class RouteTable:
                 return True
         return False
 
-    def get_neibour(self)->List:
+    def get_neibour(self) -> List:
         """
         :return:嵌套列表,里面每一个列表包含两个元素,ip和port
         """
-        res=[]
+        res = []
         for row in self.Table:
-            if row['interface']==0:
-                res.append([row['dst_ip'],row['dst_port']])
+            if row['interface'] == 0:
+                res.append([row['dst_ip'], row['dst_port']])
+        return res
+
+    def get_all_member(self) -> List:
+        res = []
+        for row in self.Table:
+            res.append([row['dst_ip'], row['dst_port']])
         return res
 
     def save_table(self, json_file) -> None:
