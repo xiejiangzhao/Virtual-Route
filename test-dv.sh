@@ -31,6 +31,7 @@ tmux send -t "test-dvroute":0.4 'y' Enter
 tmux send -t "test-dvroute":0.5 '0' Enter
 tmux send -t "test-dvroute":0.5 'y' Enter
 tmux send -t "test-dvroute":0.5 'Hello, World!' Enter
-tmux send -t "test-dvroute":0.5 '5'
+# tmux send -t "test-dvroute":0.5 'exit' Enter
+tmux send -t "test-dvroute":0.5 '5' Enter
 
 tmux a -t test-dvroute

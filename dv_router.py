@@ -52,8 +52,12 @@ def send_dict_and_recv_bytes(ip: str, port: int, **kwargs):
 
 class DVRouteRequestHandler(socketserver.StreamRequestHandler):
     logger = logging.getLogger("RouteServer")
+    initial_level = True
 
     def handle(self):
+        if self.initial_level:
+            self.initial_level = False
+            self.logger.setLevel(logging.INFO)
         # global rt, dvt
         sk = self.request
         raw_data = recv_bytes(sk)
@@ -105,6 +109,7 @@ first_broadcast: bool = True
 def start_server(ip: str, port: int) -> None:
     ss = socketserver.ThreadingTCPServer((ip, port), DVRouteRequestHandler)
     logger = logging.getLogger("main")
+    logger.setLevel(logging.INFO)
     logger.info(f"Prepare to start RouteServer({ip}:{port})...")
     try:
         ss.serve_forever()
@@ -115,6 +120,7 @@ def start_server(ip: str, port: int) -> None:
 
 def heart_loop(rt: RouteTable, dvt: DVTable) -> None:
     logger = logging.getLogger("HeartLoop")
+    logger.setLevel(logging.INFO)
     # global first_broadcast, self_ip, self_port
     first_broadcast: bool = True
     while True:
@@ -125,8 +131,9 @@ def heart_loop(rt: RouteTable, dvt: DVTable) -> None:
                                               dst_ip=i[0], dst_port=i[1], data=dvt.DVTable)
                 logger.info(f"Send route table to {i[0]}:{i[1]} and receive:\n{rd}")
         else:
-            sleep(5)
+            sleep(10)
             for i in rt.get_all_member():
+                sleep(1)
                 try:
                     rd = send_dict_and_recv_bytes(i[0], i[1], type="heart", src_ip=self_ip, src_port=self_port,
                                                   dst_ip=i[0], dst_port=i[1])
@@ -162,6 +169,7 @@ if __name__ == "__main__":
         did = int(input(f"Please input destination ID(0-{len(ROUTER_PORTS) - 1}):\n"))
         dstip = ROUTER_IP
         dstport = ROUTER_PORTS[did]
+        sleep(1)
         rcd = send_dict_and_recv_bytes(dstip, dstport, type="message", src_ip=self_ip, src_port=self_port, dst_ip=dstip,
                                        dst_port=dstport, data=ms)
         logging.info(f"Send message to {dstip}:{dstport} and receive:\n{rcd}")
@@ -170,3 +178,7 @@ if __name__ == "__main__":
         hm = input(f"Route{ROUTERS[cid]}> ")
         if hm.lower() == "exit":
             exit(0)
+        elif hm.lower() == "show route":
+            rt.print_table()
+        elif hm.lower() == "show dv":
+            dvt.print_table()
