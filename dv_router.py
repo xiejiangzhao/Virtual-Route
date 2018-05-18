@@ -169,8 +169,9 @@ if __name__ == "__main__":
         did = int(input(f"Please input destination ID(0-{len(ROUTER_PORTS) - 1}):\n"))
         dstip = ROUTER_IP
         dstport = ROUTER_PORTS[did]
+        hip, hport = rt.find_next(dstip, dstport)
         sleep(1)
-        rcd = send_dict_and_recv_bytes(dstip, dstport, type="message", src_ip=self_ip, src_port=self_port, dst_ip=dstip,
+        rcd = send_dict_and_recv_bytes(nip, nport, type="message", src_ip=self_ip, src_port=self_port, dst_ip=dstip,
                                        dst_port=dstport, data=ms)
         logging.info(f"Send message to {dstip}:{dstport} and receive:\n{rcd}")
     logging.info("Prepare to enter shell...")
