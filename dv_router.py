@@ -131,7 +131,7 @@ def heart_loop(rt: RouteTable, dvt: DVTable) -> None:
                                               dst_ip=i[0], dst_port=i[1], data=dvt.DVTable)
                 logger.debug(f"Send route table to {i[0]}:{i[1]} and receive:\n{rd}")
         else:
-            sleep(10)
+            sleep(5)
             for i in rt.get_all_member():
                 sleep(1)
                 try:
