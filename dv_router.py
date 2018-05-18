@@ -10,7 +10,7 @@ from utility.DVTable import DVTable
 from os import path
 
 # coloredlogs.install()
-logging.basicConfig(format='[%(asctime)s %(name)s %(levelname)s]:\n%(message)s\n', level=logging.ERROR)
+logging.basicConfig(format='[%(asctime)s %(name)s %(levelname)s]:\n%(message)s\n', level=logging.INFO)
 
 
 # formatter = logging.Formatter('[%(asctime)s %(name)s %(ip)s:%(port)d %(levelname)s]:\n%(message)s\n')
@@ -70,17 +70,17 @@ class DVRouteRequestHandler(socketserver.StreamRequestHandler):
         sip, sport = parsed_json["src_ip"], parsed_json["src_port"]
         dip, dport = parsed_json["dst_ip"], parsed_json["dst_port"]
         if parsed_json["type"] == "heart":
-            self.logger.info(f"Receive heart ping from {sip}:{sport}")
+            self.logger.debug(f"Receive heart ping from {sip}:{sport}")
             send_dict(sk, code=200)
         elif parsed_json["type"] == "message":
             if dip == self_ip and dport == self_port:
-                self.logger.info(f"Receive message from {sip}:{sport} :\n{parsed_json['data']}")
+                self.logger.debug(f"Receive message from {sip}:{sport} :\n{parsed_json['data']}")
                 send_dict(sk, code=200)
             else:
                 nip, nport = rt.find_next(dip, dport)
                 send_dict(sk, code=200)
                 rd = send_bytes_and_recv_bytes(nip, nport, raw_data)
-                self.logger.info(f"Transport message to next hop {nip}:{nport}.\nResponse: {rd}")
+                self.logger.debug(f"Transport message to next hop {nip}:{nport}.\nResponse: {rd}")
         elif parsed_json["type"] == "update_route":
             dvt.update_table_by_table(sip, sport, parsed_json["data"])
             send_dict(sk, code=200)
@@ -91,7 +91,7 @@ class DVRouteRequestHandler(socketserver.StreamRequestHandler):
                         continue
                     rd = send_dict_and_recv_bytes(i[0], i[1], type="update_route", src_ip=self_ip, src_port=self_port,
                                                   dst_ip=i[0], dst_port=i[1], data=dvt.DVTable)
-                    self.logger.info(f"Send route table to {i[0]}:{i[1]} and receive:\n{rd}")
+                    self.logger.debug(f"Send route table to {i[0]}:{i[1]} and receive:\n{rd}")
         sk.close()
 
 
@@ -129,7 +129,7 @@ def heart_loop(rt: RouteTable, dvt: DVTable) -> None:
             for i in rt.get_neibour():
                 rd = send_dict_and_recv_bytes(i[0], i[1], type="update_route", src_ip=self_ip, src_port=self_port,
                                               dst_ip=i[0], dst_port=i[1], data=dvt.DVTable)
-                logger.info(f"Send route table to {i[0]}:{i[1]} and receive:\n{rd}")
+                logger.debug(f"Send route table to {i[0]}:{i[1]} and receive:\n{rd}")
         else:
             sleep(10)
             for i in rt.get_all_member():
@@ -144,7 +144,7 @@ def heart_loop(rt: RouteTable, dvt: DVTable) -> None:
                     for j in rt.get_neibour():
                         rd = send_dict_and_recv_bytes(j[0], j[1], type="update_route", src_ip=self_ip,
                                                       src_port=self_port, dst_ip=j[0], dst_port=j[1], data=dvt.DVTable)
-                        logger.info(f"Send route table to {j[0]}:{j[1]} and receive:\n{rd}")
+                        logger.debug(f"Send route table to {j[0]}:{j[1]} and receive:\n{rd}")
                 logger.info(f"Router {i[0]}:{i[1]} online.")
 
 
