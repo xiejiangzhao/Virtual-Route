@@ -115,6 +115,9 @@ if __name__ == "__main__":
         dstip = ROUTER_IP
         dstport = ROUTER_PORTS[did]
         hip, hport = rt.find_next(dstip, dstport)
+        cnt = 10000
+        while cnt > 0:
+            cnt -= 1
         rcd = send_dict_and_recv_bytes(hip, hport, type="message", src_ip=self_ip, src_port=self_port, dst_ip=dstip,
                                        dst_port=dstport, data=ms)
         logging.info(f"Send message to {dstip}:{dstport} and receive:\n{rcd}")
