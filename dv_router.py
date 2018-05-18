@@ -137,6 +137,7 @@ def heart_loop(rt: RouteTable, dvt: DVTable) -> None:
                 try:
                     rd = send_dict_and_recv_bytes(i[0], i[1], type="heart", src_ip=self_ip, src_port=self_port,
                                                   dst_ip=i[0], dst_port=i[1])
+                    logger.info(f"Router {i[0]}:{i[1]} online.")
                 except ConnectionError:
                     dvt.route_offline(i[0], i[1])
                     logger.error(f"Router {i[0]}:{i[1]} offline!")
@@ -145,7 +146,6 @@ def heart_loop(rt: RouteTable, dvt: DVTable) -> None:
                         rd = send_dict_and_recv_bytes(j[0], j[1], type="update_route", src_ip=self_ip,
                                                       src_port=self_port, dst_ip=j[0], dst_port=j[1], data=dvt.DVTable)
                         logger.debug(f"Send route table to {j[0]}:{j[1]} and receive:\n{rd}")
-                logger.info(f"Router {i[0]}:{i[1]} online.")
 
 
 if __name__ == "__main__":
