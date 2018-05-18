@@ -74,13 +74,13 @@ class DVRouteRequestHandler(socketserver.StreamRequestHandler):
             send_dict(sk, code=200)
         elif parsed_json["type"] == "message":
             if dip == self_ip and dport == self_port:
-                self.logger.debug(f"Receive message from {sip}:{sport} :\n{parsed_json['data']}")
+                self.logger.info(f"Receive message from {sip}:{sport} :\n{parsed_json['data']}")
                 send_dict(sk, code=200)
             else:
                 nip, nport = rt.find_next(dip, dport)
                 send_dict(sk, code=200)
                 rd = send_bytes_and_recv_bytes(nip, nport, raw_data)
-                self.logger.debug(f"Transport message to next hop {nip}:{nport}.\nResponse: {rd}")
+                self.logger.info(f"Transport message to next hop {nip}:{nport}.\nResponse: {rd}")
         elif parsed_json["type"] == "update_route":
             dvt.update_table_by_table(sip, sport, parsed_json["data"])
             send_dict(sk, code=200)
