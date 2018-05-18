@@ -10,7 +10,7 @@ from utility.DVTable import DVTable
 from os import path
 
 # coloredlogs.install()
-logging.basicConfig(format='[%(asctime)s %(name)s %(levelname)s]:\n%(message)s\n')
+logging.basicConfig(format='[%(asctime)s %(name)s %(levelname)s]:\n%(message)s\n', level=logging.ERROR)
 
 
 # formatter = logging.Formatter('[%(asctime)s %(name)s %(ip)s:%(port)d %(levelname)s]:\n%(message)s\n')
@@ -52,12 +52,12 @@ def send_dict_and_recv_bytes(ip: str, port: int, **kwargs):
 
 class DVRouteRequestHandler(socketserver.StreamRequestHandler):
     logger = logging.getLogger("RouteServer")
-    initial_level = True
+    # initial_level = True
 
     def handle(self):
-        if self.initial_level:
-            self.initial_level = False
-            self.logger.setLevel(logging.INFO)
+        # if self.initial_level:
+            # self.initial_level = False
+            # self.logger.setLevel(logging.INFO)
         # global rt, dvt
         sk = self.request
         raw_data = recv_bytes(sk)
@@ -109,7 +109,7 @@ first_broadcast: bool = True
 def start_server(ip: str, port: int) -> None:
     ss = socketserver.ThreadingTCPServer((ip, port), DVRouteRequestHandler)
     logger = logging.getLogger("main")
-    logger.setLevel(logging.INFO)
+    # logger.setLevel(logging.INFO)
     logger.info(f"Prepare to start RouteServer({ip}:{port})...")
     try:
         ss.serve_forever()
@@ -120,7 +120,7 @@ def start_server(ip: str, port: int) -> None:
 
 def heart_loop(rt: RouteTable, dvt: DVTable) -> None:
     logger = logging.getLogger("HeartLoop")
-    logger.setLevel(logging.INFO)
+    # logger.setLevel(logging.INFO)
     # global first_broadcast, self_ip, self_port
     first_broadcast: bool = True
     while True:
