@@ -171,7 +171,7 @@ if __name__ == "__main__":
         dstport = ROUTER_PORTS[did]
         sleep(3)
         hip, hport = rt.find_next(dstip, dstport)
-        rcd = send_dict_and_recv_bytes(nip, nport, type="message", src_ip=self_ip, src_port=self_port, dst_ip=dstip,
+        rcd = send_dict_and_recv_bytes(hip, hport, type="message", src_ip=self_ip, src_port=self_port, dst_ip=dstip,
                                        dst_port=dstport, data=ms)
         logging.info(f"Send message to {dstip}:{dstport} and receive:\n{rcd}")
     logging.info("Prepare to enter shell...")
