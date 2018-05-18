@@ -3,11 +3,9 @@ import socketserver
 import socket
 import json
 import threading
-from time import sleep
 from utility.RouteTable import RouteTable
 from utility.LSGraph import LSGraph
 from os import path
-
 
 logging.basicConfig(format='[%(asctime)s %(name)s %(levelname)s]:\n%(message)s\n', level=logging.INFO)
 
@@ -85,7 +83,7 @@ first_broadcast: bool = True
 
 
 def start_server(ip: str, port: int) -> None:
-    ss = socketserver.ThreadingTCPServer((ip, port), DVRouteRequestHandler)
+    ss = socketserver.ThreadingTCPServer((ip, port), LSRouteRequestHandler)
     logger = logging.getLogger("main")
     # logger.setLevel(logging.INFO)
     logger.info(f"Prepare to start RouteServer({ip}:{port})...")
