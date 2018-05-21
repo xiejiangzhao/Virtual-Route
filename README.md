@@ -16,3 +16,6 @@ Usage:
 ## LS Router
  - `python3(.6) ls_router.py` Start LS Router
  - `./test-ls.sh` Start auto test.
+
+ ## Summary
+ Finally We finish it though it's too basic to do more.I hope we learn it well.
